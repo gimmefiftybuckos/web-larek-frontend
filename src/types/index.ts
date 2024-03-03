@@ -27,3 +27,8 @@ export interface IAppState {
 	// preview: string | null;
 	order: IOrder | null;
 }
+
+export interface ITotalItems<T> {
+	total: number;
+	items: T[];
+}

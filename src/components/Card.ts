@@ -15,6 +15,8 @@ interface ICardActions {
 
 export class Card extends Component<ICard> {
 	protected _title: HTMLElement;
+	protected _price: HTMLElement;
+	protected _category: HTMLElement;
 	protected _image?: HTMLImageElement;
 	protected _description?: HTMLElement;
 	protected _button?: HTMLButtonElement;
@@ -33,6 +35,8 @@ export class Card extends Component<ICard> {
 		);
 		this._button = container.querySelector(`.${blockName}__button`);
 		this._description = container.querySelector(`.${blockName}__description`);
+		this._price = container.querySelector(`.${blockName}__price`);
+		this._category = container.querySelector(`.${blockName}__category`);
 
 		if (actions?.onClick) {
 			if (this._button) {
@@ -57,6 +61,40 @@ export class Card extends Component<ICard> {
 
 	get title(): string {
 		return this._title.textContent || '';
+	}
+
+	set price(value: number | null) {
+		value
+			? this.setText(this._price, value + ' синапсов')
+			: this.setText(this._price, 'Бесценно');
+	}
+
+	get price(): number {
+		return parseInt(this._price.textContent);
+	}
+
+	set category(value: string | boolean) {
+		const categoryClass = 'card__category_';
+		this.setText(this._category, value);
+		switch (
+			value // подумать как сделать по ООП
+		) {
+			case value === 'софт-скил':
+				this.toggleClass(this._category, categoryClass + 'soft');
+				break;
+			case value === 'лругое':
+				this.toggleClass(this._category, categoryClass + 'other');
+				break;
+			case value === 'дополнительное':
+				this.toggleClass(this._category, categoryClass + 'additional');
+				break;
+			case value === 'кнопка':
+				this.toggleClass(this._category, categoryClass + 'button');
+				break;
+			case value === 'хард-скил':
+				this.toggleClass(this._category, categoryClass + 'hard');
+				break;
+		}
 	}
 
 	set image(value: string) {

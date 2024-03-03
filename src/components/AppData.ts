@@ -1,10 +1,6 @@
 import { IAppState, IOrder, IProduct } from '../types';
 import { Model } from './base/Model';
 
-export type CatalogChangeEvent = {
-	catalog: ProductItem[];
-};
-
 export class ProductItem extends Model<IProduct> {
 	id: string;
 	description: string;
