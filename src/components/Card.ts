@@ -73,28 +73,19 @@ export class Card extends Component<ICard> {
 		return parseInt(this._price.textContent);
 	}
 
-	set category(value: string | boolean) {
+	set category(value: string) {
 		const categoryClass = 'card__category_';
 		this.setText(this._category, value);
-		switch (
-			value // подумать как сделать по ООП
-		) {
-			case value === 'софт-скил':
-				this.toggleClass(this._category, categoryClass + 'soft');
-				break;
-			case value === 'лругое':
-				this.toggleClass(this._category, categoryClass + 'other');
-				break;
-			case value === 'дополнительное':
-				this.toggleClass(this._category, categoryClass + 'additional');
-				break;
-			case value === 'кнопка':
-				this.toggleClass(this._category, categoryClass + 'button');
-				break;
-			case value === 'хард-скил':
-				this.toggleClass(this._category, categoryClass + 'hard');
-				break;
-		}
+
+		const categoryMap = new Map([
+			['софт-скил', '_soft'],
+			['другое', 'other'],
+			['дополнительное', 'additional'],
+			['кнопка', 'button'],
+			['хард-скил', 'hard'],
+		]);
+
+		this.toggleClass(this._category, categoryClass + categoryMap.get(value));
 	}
 
 	set image(value: string) {

@@ -5,9 +5,10 @@ import { EventEmitter } from './components/base/events';
 import { AppData, ProductItem } from './components/AppData';
 import { Page } from './components/Page';
 import { cloneTemplate, ensureElement } from './utils/utils';
-import { CatalogItem } from './components/Card';
+import { Card, CatalogItem } from './components/Card';
 import { IProduct, ITotalItems } from './types';
 import { Modal } from './components/common/Modal';
+import { Basket } from './components/common/Basket';
 
 const events = new EventEmitter();
 const api = new Api(API_URL);
@@ -25,19 +26,15 @@ const appData = new AppData({}, events); // принимает аргумент�
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const selectedCardTemplate =
 	ensureElement<HTMLTemplateElement>('#card-preview');
+const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const basketCardTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 
-const basketButton = document.querySelector('.header__basket');
-
-basketButton.addEventListener('click', (event) => {
-	event.preventDefault();
-	events.emit('basket: open');
-});
+const basket = new Basket(cloneTemplate(basketTemplate), events);
 
 // Изменились элементы каталога
 events.on('items:changed', () => {
 	page.catalog = appData.catalog.map((item) => {
-		console.log(item);
+		// console.log(item);
 
 		const card = new CatalogItem(cloneTemplate(cardCatalogTemplate), {
 			onClick: () => events.emit('card:select', item),
@@ -63,16 +60,19 @@ events.on('card:select', (item: ProductItem) => {
 			category: item.category,
 		}),
 	});
-	console.log(card.price);
 });
 
-events.on('basket: open', () => {
-	const card = new CatalogItem(cloneTemplate(basketCardTemplate));
+events.on('basket: open', (item) => {
+	const card = new CatalogItem(cloneTemplate(basketCardTemplate), {
+		onClick: () => events.emit('card:select', item),
+	});
 	modal.render({
-		content: card.render({
-			title: card.title,
-			price: card.price,
-		}),
+		content: basket.render(),
+		// {
+		// items:
+		// ожидает массив элементов добавленных в корзину карточек
+		// необходимо выделить добавленные элементы и отобразить их в корзине
+		// }
 	});
 });
 
