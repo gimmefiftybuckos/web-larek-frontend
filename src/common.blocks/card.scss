@@ -18,6 +18,19 @@
     }
   }
 
+  &__index {
+    @include mixins.flex(row);
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background-color: $primary;
+    color: white;
+    margin-right: 1rem;
+  }
+
   &_compact {
     flex-direction: row;
     background-color: transparent;

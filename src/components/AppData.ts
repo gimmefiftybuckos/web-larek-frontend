@@ -8,17 +8,31 @@ export class ProductItem extends Model<IProduct> {
 	title: string;
 	category: string;
 	price: number | null;
+	inBasket: boolean;
 }
 
 export class AppData extends Model<IAppState> {
 	catalog: IProduct[];
-	basket: string[];
+	basket: IProduct[];
 	order: IOrder | null;
 
 	async setCatalog(items: IProduct[]) {
-		console.log('bebra', items);
+		// console.log('bebra', items);
 
 		this.catalog = items.map((item) => new ProductItem(item, this.events));
 		this.emitChanges('items:changed', { catalog: this.catalog });
+	}
+
+	addProduct(item: HTMLElement, container: HTMLElement[]) {
+		if (item) {
+			// console.log(item);
+			// console.log(container);
+			container.push(item);
+			// console.log(container);
+		}
+	}
+
+	getProduct(container: HTMLElement[]) {
+		return container;
 	}
 }

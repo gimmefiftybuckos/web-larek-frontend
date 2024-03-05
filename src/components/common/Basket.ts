@@ -5,13 +5,14 @@ import { EventEmitter } from '../base/events';
 interface IBasketView {
 	items: HTMLElement[];
 	price: number;
-	// selected: string[];
+	selected: HTMLElement[];
 }
 
 export class Basket extends Component<IBasketView> {
 	protected _list: HTMLElement;
 	protected _price: HTMLElement;
 	protected _button: HTMLElement;
+	selected: HTMLElement[]; // нет четкого понимая куда сохранить элементы для корзины
 
 	constructor(container: HTMLElement, protected events: EventEmitter) {
 		super(container);
@@ -27,6 +28,8 @@ export class Basket extends Component<IBasketView> {
 		}
 
 		this.items = [];
+
+		this.selected = [];
 	}
 
 	set items(items: HTMLElement[]) {
@@ -41,15 +44,7 @@ export class Basket extends Component<IBasketView> {
 		}
 	}
 
-	// set selected(items: string[]) {
-	// 	if (items.length) {
-	// 		this.setDisabled(this._button, false);
-	// 	} else {
-	// 		this.setDisabled(this._button, true);
-	// 	}
-	// }
-
-	// set price(price: number) {
-	// 	this.setText(this._price, price);
-	// }
+	set price(price: number) {
+		this.setText(this._price, price);
+	}
 }

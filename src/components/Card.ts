@@ -2,8 +2,10 @@ import { ensureElement } from '../utils/utils';
 import { Component } from './base/Component';
 
 export interface ICard {
+	id: string;
+	index: number;
 	description: string;
-	image: string;
+	image?: string;
 	title: string;
 	category: string;
 	price: number | null;
@@ -14,6 +16,7 @@ interface ICardActions {
 }
 
 export class Card extends Component<ICard> {
+	protected _index: HTMLElement;
 	protected _title: HTMLElement;
 	protected _price: HTMLElement;
 	protected _category: HTMLElement;
@@ -29,12 +32,17 @@ export class Card extends Component<ICard> {
 		super(container);
 
 		this._title = ensureElement<HTMLElement>(`.${blockName}__title`, container);
-		this._image = ensureElement<HTMLImageElement>(
-			`.${blockName}__image`,
-			container
-		);
+
+		container.querySelector(`.${blockName}__image`)
+			? (this._image = ensureElement<HTMLImageElement>(
+					`.${blockName}__image`,
+					container
+			  ))
+			: null;
+
+		this._index = container.querySelector(`.${blockName}__index`);
 		this._button = container.querySelector(`.${blockName}__button`);
-		this._description = container.querySelector(`.${blockName}__description`);
+		this._description = container.querySelector(`.${blockName}__text`);
 		this._price = container.querySelector(`.${blockName}__price`);
 		this._category = container.querySelector(`.${blockName}__category`);
 
@@ -47,8 +55,13 @@ export class Card extends Component<ICard> {
 		}
 	}
 
+	set index(value: string) {
+		this.setText(this._index, value);
+	}
+
 	set id(value: string) {
 		this.container.dataset.id = value;
+		// console.log(value);
 	}
 
 	get id(): string {
@@ -78,7 +91,8 @@ export class Card extends Component<ICard> {
 		this.setText(this._category, value);
 
 		const categoryMap = new Map([
-			['софт-скил', '_soft'],
+			// наверное, это не совсем по ООП
+			['софт-скил', 'soft'],
 			['другое', 'other'],
 			['дополнительное', 'additional'],
 			['кнопка', 'button'],
@@ -92,18 +106,8 @@ export class Card extends Component<ICard> {
 		this.setImage(this._image, value, this.title);
 	}
 
-	set description(value: string | string[]) {
-		if (Array.isArray(value)) {
-			this._description.replaceWith(
-				...value.map((str) => {
-					const descTemplate = this._description.cloneNode() as HTMLElement;
-					this.setText(descTemplate, str);
-					return descTemplate;
-				})
-			);
-		} else {
-			this.setText(this._description, value);
-		}
+	set description(value: string) {
+		this.setText(this._description, value);
 	}
 }
 

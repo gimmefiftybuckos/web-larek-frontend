@@ -5,7 +5,7 @@ import { EventEmitter } from './components/base/events';
 import { AppData, ProductItem } from './components/AppData';
 import { Page } from './components/Page';
 import { cloneTemplate, ensureElement } from './utils/utils';
-import { Card, CatalogItem } from './components/Card';
+import { CatalogItem } from './components/Card';
 import { IProduct, ITotalItems } from './types';
 import { Modal } from './components/common/Modal';
 import { Basket } from './components/common/Basket';
@@ -34,8 +34,6 @@ const basket = new Basket(cloneTemplate(basketTemplate), events);
 // Изменились элементы каталога
 events.on('items:changed', () => {
 	page.catalog = appData.catalog.map((item) => {
-		// console.log(item);
-
 		const card = new CatalogItem(cloneTemplate(cardCatalogTemplate), {
 			onClick: () => events.emit('card:select', item),
 		});
@@ -50,9 +48,12 @@ events.on('items:changed', () => {
 });
 
 events.on('card:select', (item: ProductItem) => {
-	const card = new CatalogItem(cloneTemplate(selectedCardTemplate));
+	const card = new CatalogItem(cloneTemplate(selectedCardTemplate), {
+		onClick: (event) => events.emit('basket:update', item),
+	});
 	modal.render({
 		content: card.render({
+			id: item.id,
 			title: item.title,
 			image: CDN_URL + item.image,
 			description: item.description,
@@ -62,18 +63,55 @@ events.on('card:select', (item: ProductItem) => {
 	});
 });
 
-events.on('basket: open', (item) => {
-	const card = new CatalogItem(cloneTemplate(basketCardTemplate), {
-		onClick: () => events.emit('card:select', item),
-	});
+events.on('basket: open', () => {
 	modal.render({
-		content: basket.render(),
-		// {
-		// items:
-		// ожидает массив элементов добавленных в корзину карточек
-		// необходимо выделить добавленные элементы и отобразить их в корзине
-		// }
+		content: basket.render({
+			items: basket.selected,
+		}),
 	});
+});
+
+events.on('basket:update', (item: ProductItem | null) => {
+	const cardTemplate = new CatalogItem(cloneTemplate(basketCardTemplate), {
+		onClick: (event) => events.emit('basket:delete', item),
+	});
+	if (item !== null) {
+		const card = cardTemplate.render({
+			id: item.id,
+			title: item.title,
+			price: item.price,
+			index: basket.selected.length + 1,
+		});
+		appData.addProduct(card, basket.selected);
+		modal.close();
+	} else {
+		modal.render({
+			content: basket.render({
+				items: basket.selected,
+			}),
+		});
+	}
+});
+
+events.on('basket:delete', (item: ProductItem) => {
+	// console.log(basket.selected);
+	basket.selected = basket.selected.filter((element) => {
+		// console.log(item.id);
+		// console.log(element.dataset.id);
+
+		return element.dataset.id !== item.id;
+	});
+
+	events.emit('basket:update', null);
+	// console.log(basket.selected);
+});
+
+events.on('modal:open', () => {
+	page.locked = true;
+});
+
+events.on('modal:close', () => {
+	page.locked = false;
 });
 
 api
@@ -82,3 +120,6 @@ api
 	.catch((err) => {
 		console.error(err);
 	});
+
+const beb = document.querySelectorAll('.modal');
+console.log(beb);

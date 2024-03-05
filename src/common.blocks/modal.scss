@@ -4,7 +4,7 @@
 .modal {
   @include mixins.sublayer;
   height: max-content;
-  position: absolute;
+  position: fixed;
   display: none;
   justify-content: center;
   background-color: $overlayBackground;
@@ -29,6 +29,8 @@
 
   &__content {
     flex-grow: 1;
+    display: flex;
+    align-items: center;
   }
 
   &__title {
