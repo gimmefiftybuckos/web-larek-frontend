@@ -1,4 +1,6 @@
+import { catalogValue } from '../utils/constants';
 import { ensureElement } from '../utils/utils';
+import { ProductItem } from './AppData';
 import { Component } from './base/Component';
 
 export interface ICard {
@@ -55,6 +57,18 @@ export class Card extends Component<ICard> {
 		}
 	}
 
+	checkInBasket(item: ProductItem, container: CatalogItem[]) {
+		container.map((element) => {
+			if (item.id === element.id) {
+				this.setDisabled(this._button, true);
+				this.setText(this._button, 'Уже добавлено');
+			} else {
+				this.setDisabled(this._button, false);
+				this.setText(this._button, 'В корзину');
+			}
+		});
+	}
+
 	set index(value: string) {
 		this.setText(this._index, value);
 	}
@@ -77,9 +91,12 @@ export class Card extends Component<ICard> {
 	}
 
 	set price(value: number | null) {
-		value
-			? this.setText(this._price, value + ' синапсов')
-			: this.setText(this._price, 'Бесценно');
+		if (value) {
+			this.setText(this._price, value + catalogValue);
+		} else {
+			this.setText(this._price, 'Бесценно');
+			this._button ? this.setHidden(this._button) : null;
+		}
 	}
 
 	get price(): number {

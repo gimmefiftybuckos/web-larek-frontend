@@ -1,3 +1,4 @@
+import { CDN_URL } from '../../utils/constants';
 import { IEvents } from './events';
 
 /**
@@ -25,7 +26,7 @@ export abstract class Component<T> {
 	// Сменить статус блокировки
 	setDisabled(element: HTMLElement, state: boolean) {
 		if (element) {
-			if (state) element.setAttribute('disabled', 'disabled');
+			if (state) element.setAttribute('disabled', 'true');
 			else element.removeAttribute('disabled');
 		}
 	}
@@ -43,7 +44,7 @@ export abstract class Component<T> {
 	// Установить изображение с алтернативным текстом
 	protected setImage(element: HTMLImageElement, src: string, alt?: string) {
 		if (element) {
-			element.src = src;
+			element.src = CDN_URL + src;
 			if (alt) {
 				element.alt = alt;
 			}

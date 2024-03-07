@@ -1,4 +1,5 @@
 import { IAppState, IOrder, IProduct } from '../types';
+import { CatalogItem } from './Card';
 import { Model } from './base/Model';
 
 export class ProductItem extends Model<IProduct> {
@@ -8,7 +9,6 @@ export class ProductItem extends Model<IProduct> {
 	title: string;
 	category: string;
 	price: number | null;
-	inBasket: boolean;
 }
 
 export class AppData extends Model<IAppState> {
@@ -23,7 +23,17 @@ export class AppData extends Model<IAppState> {
 		this.emitChanges('items:changed', { catalog: this.catalog });
 	}
 
-	addProduct(item: HTMLElement, container: HTMLElement[]) {
+	getPrice(container: CatalogItem[], value: string) {
+		let totalAmount = 0;
+
+		for (let i = 0; i < container.length; i++) {
+			const currentAccount = container[i];
+			totalAmount += currentAccount.price;
+		}
+		return totalAmount + value;
+	}
+
+	addProduct(item: CatalogItem, container: CatalogItem[]) {
 		if (item) {
 			// console.log(item);
 			// console.log(container);

@@ -1,6 +1,6 @@
 import './scss/styles.scss';
 import { Api } from './components/base/api';
-import { API_URL, CDN_URL } from './utils/constants';
+import { API_URL, CDN_URL, catalogValue } from './utils/constants';
 import { EventEmitter } from './components/base/events';
 import { AppData, ProductItem } from './components/AppData';
 import { Page } from './components/Page';
@@ -39,7 +39,7 @@ events.on('items:changed', () => {
 		});
 		return card.render({
 			title: item.title,
-			image: CDN_URL + item.image, // подумать: CDN на низком или на верхнем уровне (метод setImages)
+			image: item.image,
 			description: item.description,
 			price: item.price,
 			category: item.category,
@@ -49,13 +49,18 @@ events.on('items:changed', () => {
 
 events.on('card:select', (item: ProductItem) => {
 	const card = new CatalogItem(cloneTemplate(selectedCardTemplate), {
-		onClick: (event) => events.emit('basket:update', item),
+		onClick: (event) => {
+			item.price !== null
+				? events.emit('basket:change', item)
+				: events.emit('basket:change');
+		},
 	});
+	card.checkInBasket(item, basket.selected);
 	modal.render({
 		content: card.render({
 			id: item.id,
 			title: item.title,
-			image: CDN_URL + item.image,
+			image: item.image,
 			description: item.description,
 			price: item.price,
 			category: item.category,
@@ -63,47 +68,45 @@ events.on('card:select', (item: ProductItem) => {
 	});
 });
 
-events.on('basket: open', () => {
+events.on('basket:render', () => {
 	modal.render({
 		content: basket.render({
-			items: basket.selected,
+			items: basket.selected.map((element, index) => {
+				return element.render({
+					index: index + 1,
+				});
+			}),
+			price: appData.getPrice(basket.selected, catalogValue), // не вышло реализовать через метод reduce
 		}),
 	});
 });
 
-events.on('basket:update', (item: ProductItem | null) => {
+events.on('basket:change', (item: ProductItem | null) => {
+	// то как я воспринимаю эту работу: https://i.postimg.cc/HxyjBX0m/Untitled-1.jpg
 	const cardTemplate = new CatalogItem(cloneTemplate(basketCardTemplate), {
 		onClick: (event) => events.emit('basket:delete', item),
 	});
 	if (item !== null) {
-		const card = cardTemplate.render({
+		cardTemplate.render({
 			id: item.id,
 			title: item.title,
 			price: item.price,
-			index: basket.selected.length + 1,
 		});
-		appData.addProduct(card, basket.selected);
+		appData.addProduct(cardTemplate, basket.selected);
 		modal.close();
 	} else {
-		modal.render({
-			content: basket.render({
-				items: basket.selected,
-			}),
-		});
+		events.emit('basket:render');
 	}
+	page.render({
+		counter: basket.selected.length,
+	});
 });
 
 events.on('basket:delete', (item: ProductItem) => {
-	// console.log(basket.selected);
 	basket.selected = basket.selected.filter((element) => {
-		// console.log(item.id);
-		// console.log(element.dataset.id);
-
-		return element.dataset.id !== item.id;
+		return element.id !== item.id;
 	});
-
-	events.emit('basket:update', null);
-	// console.log(basket.selected);
+	events.emit('basket:change', null);
 });
 
 events.on('modal:open', () => {
@@ -120,6 +123,3 @@ api
 	.catch((err) => {
 		console.error(err);
 	});
-
-const beb = document.querySelectorAll('.modal');
-console.log(beb);
