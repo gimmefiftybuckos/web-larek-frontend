@@ -1,4 +1,5 @@
 import { IAppState, IOrder, IProduct } from '../types';
+import { ensureAllElements } from '../utils/utils';
 import { CatalogItem } from './Card';
 import { Model } from './base/Model';
 

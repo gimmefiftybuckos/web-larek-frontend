@@ -19,12 +19,12 @@ export interface IOrder {
 export interface IOrderForm {
 	email: string;
 	phone: string;
+	address: string;
 }
 
 export interface IAppState {
 	catalog: IProduct[];
 	basket: string[];
-	// preview: string | null;
 	order: IOrder | null;
 }
 

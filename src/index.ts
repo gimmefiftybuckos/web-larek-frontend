@@ -9,6 +9,7 @@ import { CatalogItem } from './components/Card';
 import { IProduct, ITotalItems } from './types';
 import { Modal } from './components/common/Modal';
 import { Basket } from './components/common/Basket';
+import { Order } from './components/Order';
 
 const events = new EventEmitter();
 const api = new Api(API_URL);
@@ -28,7 +29,9 @@ const selectedCardTemplate =
 	ensureElement<HTMLTemplateElement>('#card-preview');
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const basketCardTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
+const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 
+const order = new Order(cloneTemplate(orderTemplate), events);
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 
 // Изменились элементы каталога
@@ -107,6 +110,38 @@ events.on('basket:delete', (item: ProductItem) => {
 		return element.id !== item.id;
 	});
 	events.emit('basket:change', null);
+});
+
+events.on('order:open', () => {
+	modal.render({
+		content: order.render({
+			// email: '',
+			// phone: '',
+			// valid: false,
+			// errors: [],
+			valid: false,
+			errors: '',
+			address: '',
+		}),
+	});
+	// order.enableValidation();
+	// order.validateForm();
+});
+
+events.on('order:update', () => {
+	modal.render({
+		content: order.render({
+			// email: '',
+			// phone: '',
+			// valid: false,
+			// errors: [],
+			valid: order.valid,
+			errors: order.errors,
+			// address: order.address,
+		}),
+	});
+	// order.enableValidation();
+	// order.validateForm();
 });
 
 events.on('modal:open', () => {
