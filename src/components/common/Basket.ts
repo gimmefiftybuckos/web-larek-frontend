@@ -25,7 +25,7 @@ export class Basket extends Component<IBasketView> {
 
 		if (this._button) {
 			this._button.addEventListener('click', () => {
-				events.emit('order:open');
+				events.emit('order:render');
 			});
 		}
 
@@ -53,4 +53,9 @@ export class Basket extends Component<IBasketView> {
 			? this.setDisabled(this._button, true) // подумать про принцип единой отвественности
 			: this.setDisabled(this._button, false);
 	}
+
+	// get price(): number {
+	// 	const res = parseInt(this.price);
+	// 	return res;
+	// }
 }

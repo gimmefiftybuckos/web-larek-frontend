@@ -10,6 +10,7 @@ import { IProduct, ITotalItems } from './types';
 import { Modal } from './components/common/Modal';
 import { Basket } from './components/common/Basket';
 import { Order } from './components/Order';
+import { Success } from './components/common/Success';
 
 const events = new EventEmitter();
 const api = new Api(API_URL);
@@ -30,9 +31,12 @@ const selectedCardTemplate =
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const basketCardTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
+const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
+const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
-const order = new Order(cloneTemplate(orderTemplate), events);
 const basket = new Basket(cloneTemplate(basketTemplate), events);
+const order = new Order(cloneTemplate(orderTemplate), events);
+const contacts = new Order(cloneTemplate(contactsTemplate), events);
 
 // Изменились элементы каталога
 events.on('items:changed', () => {
@@ -112,36 +116,42 @@ events.on('basket:delete', (item: ProductItem) => {
 	events.emit('basket:change', null);
 });
 
-events.on('order:open', () => {
+events.on('order:render', () => {
 	modal.render({
 		content: order.render({
-			// email: '',
-			// phone: '',
-			// valid: false,
-			// errors: [],
-			valid: false,
-			errors: '',
+			valid: order.valid,
+			errors: order.errors,
 			address: '',
 		}),
 	});
-	// order.enableValidation();
-	// order.validateForm();
 });
 
-events.on('order:update', () => {
+events.on('contacts:render', () => {
 	modal.render({
-		content: order.render({
-			// email: '',
-			// phone: '',
-			// valid: false,
-			// errors: [],
-			valid: order.valid,
-			errors: order.errors,
-			// address: order.address,
+		content: contacts.render({
+			valid: contacts.valid,
+			errors: contacts.errors,
+			email: '',
+			phone: '',
 		}),
 	});
-	// order.enableValidation();
-	// order.validateForm();
+	contacts.paymentState = order.paymentState;
+});
+
+events.on('order:submit', () => {
+	const success = new Success(cloneTemplate(successTemplate), {
+		onClick: () => {
+			modal.close();
+			appData.clearBasket(basket.selected);
+			// events.emit('basket:change');
+		},
+	});
+
+	modal.render({
+		content: success.render({
+			// total: basket.price,
+		}),
+	});
 });
 
 events.on('modal:open', () => {

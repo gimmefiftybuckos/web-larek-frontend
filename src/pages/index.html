@@ -276,7 +276,9 @@
 							class="form__input"
 							type="text"
 							placeholder="Введите адрес"
-							minlength="10"
+							minlength="0"
+							pattern="^[0-9a-zA-Zа-яёА-ЯЁ\,\.\-]+([\s][a-zA-Zа-яёА-ЯЁ\,\.\-]+)*"
+							data-error-message="Разрешены только латинские, кириллические буквы, знак точки, запятой, дефиса и пробелы"
 						/>
 					</label>
 				</div>
@@ -297,7 +299,7 @@
 						<input
 							name="email"
 							class="form__input"
-							type="text"
+							type="email"
 							placeholder="Введите Email"
 						/>
 					</label>
@@ -306,8 +308,10 @@
 						<input
 							name="phone"
 							class="form__input"
-							type="text"
+							type="tel"
 							placeholder="+7 ("
+							pattern="[\+]{0,1}[0-9]{11}"
+							data-error-message="Введите номер телефона"
 						/>
 					</label>
 				</div>

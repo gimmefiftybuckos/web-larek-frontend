@@ -5,6 +5,7 @@
   @include mixins.flex(column);
   gap: 1.5rem;
   border-radius: 3rem;
+  inline-size: 100%;
 
   &__label {
     flex-grow: 1;

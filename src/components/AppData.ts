@@ -46,4 +46,8 @@ export class AppData extends Model<IAppState> {
 	getProduct(container: HTMLElement[]) {
 		return container;
 	}
+
+	clearBasket(container: CatalogItem[]) {
+		container = [];
+	}
 }
