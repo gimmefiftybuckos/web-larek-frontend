@@ -51,7 +51,7 @@ yarn build
 
 ```ts
 // Элементы в каталоге
-export interface IProduct {
+interface IProduct {
 	id: string;
 	description: string;
 	image: string;
@@ -61,7 +61,7 @@ export interface IProduct {
 }
 
 // Формы страницы заказа
-export interface IOrderForm {
+interface IOrderForm {
 	email: string;
 	phone: string;
 	address: string;
@@ -71,12 +71,12 @@ export interface IOrderForm {
 }
 
 // Объекты для заказа
-export interface IOrder extends IOrderForm {
+interface IOrder extends IOrderForm {
 	items: string[];
 }
 
 // Элементы приложения
-export interface IAppState {
+interface IAppState {
 	catalog: IProduct[];
 	basket: string[];
 	order: IOrder | null;
@@ -104,13 +104,13 @@ interface IBasketView {
 }
 
 // Получение элементов страницы
-export interface ITotalItems<T> {
+interface ITotalItems<T> {
 	total: number;
 	items: T[];
 }
 
 // Данные элементов католога для заказа
-export interface IOrderResult {
+interface IOrderResult {
 	id: string;
 }
 
@@ -127,7 +127,7 @@ interface IFormState {
 }
 
 // Описание карточек страницы
-export interface ICard {
+interface ICard {
 	id: string;
 	index: number;
 	description: string;
