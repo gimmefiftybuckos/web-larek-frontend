@@ -201,10 +201,7 @@ class EventEmitter implements IEvents {
 ```ts
 abstract class Model<T> {
 	// Сообщить всем что модель поменялась
-	emitChanges(event: string, payload?: object) {
-		// Состав данных можно модифицировать
-		this.events.emit(event, payload ?? {});
-	}
+	emitChanges(event: string, payload?: object);
 }
 
 class AppData extends Model<IAppState> {
@@ -307,17 +304,7 @@ class Card extends Component<ICard> {
 	);
 
 	// Проверка наличия элемента в корзине
-	checkInBasket(item: ProductItem, container: CatalogItem[]) {
-		this.setDisabled(this._button, false);
-		this.setText(this._button, 'В корзину');
-
-		container.forEach((element) => {
-			if (item.id === element.id) {
-				this.setDisabled(this._button, true);
-				this.setText(this._button, 'Уже добавлено');
-			}
-		});
-	}
+	checkInBasket(item: ProductItem, container: CatalogItem[]);
 
 	// Установить элемента страницы
 	set index(value: string);
@@ -370,6 +357,7 @@ class Basket extends Component<IBasketView> {
 	// Получить стоимость товаров в корзине
 	get price(): string;
 }
+
 // Класс для работы с данными заказа
 class Order extends Form<IOrderForm> {
 	protected _button: HTMLElement;
