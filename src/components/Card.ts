@@ -75,7 +75,6 @@ export class Card extends Component<ICard> {
 
 	set id(value: string) {
 		this.container.dataset.id = value;
-		// console.log(value);
 	}
 
 	get id(): string {

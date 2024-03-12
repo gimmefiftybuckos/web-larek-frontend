@@ -1,5 +1,5 @@
 // import {Form} from "./common/Form";
-import { IOrderForm } from '../types';
+import { IOrder, IOrderForm } from '../types';
 import { EventEmitter, IEvents } from './base/events';
 import { ensureAllElements, ensureElement } from '../utils/utils';
 import { Form } from './common/Form';
@@ -9,7 +9,14 @@ export class Order extends Form<IOrderForm> {
 	protected _actions: HTMLElement;
 	protected _paymentButton: HTMLElement[];
 	protected _inputs: HTMLInputElement[];
-	paymentState: string;
+	order: IOrder | null = {
+		email: '',
+		phone: '',
+		address: '',
+		payment: 'none',
+		total: null,
+		items: [],
+	};
 
 	constructor(container: HTMLFormElement, events: IEvents) {
 		super(container, events);
@@ -23,7 +30,6 @@ export class Order extends Form<IOrderForm> {
 		if (this._button.classList.contains('order__button')) {
 			this._button.addEventListener('click', () => {
 				events.emit('contacts:render');
-				console.log('da');
 			});
 		} else {
 			this._button.addEventListener('click', () => {
@@ -44,11 +50,11 @@ export class Order extends Form<IOrderForm> {
 			});
 		}
 
-		this.paymentState = 'none';
-
 		this.errors = '';
 
 		this.enableValidation();
+
+		this.setOrderFields();
 	}
 
 	set phone(value: string) {
@@ -74,9 +80,19 @@ export class Order extends Form<IOrderForm> {
 			: null;
 		this.toggleClass(element, 'button_alt-active');
 
-		this.paymentState = element.getAttribute('name');
+		this.order.payment = element.getAttribute('name');
 
 		this.changeState();
+	}
+
+	protected setOrderFields() {
+		this._inputs.forEach((element) => {
+			element.addEventListener('input', (event) => {
+				const name = element.name;
+
+				this.order[name] = element.value;
+			});
+		});
 	}
 
 	protected enableValidation() {
@@ -105,16 +121,14 @@ export class Order extends Form<IOrderForm> {
 
 		const validity = value.includes(false); // неограниченный скейл инпутов
 
-		!validity && this.paymentState !== 'none'
+		!validity && this.order.payment !== 'none'
 			? (this.valid = true)
 			: (this.valid = false);
 
 		element ? this.showError(element) : null;
 	}
 
-	showError(element: HTMLInputElement) {
-		console.log(element.validity);
-
+	protected showError(element: HTMLInputElement) {
 		if (element.validity.valid) {
 			this.setHidden(this._errors);
 			this.errors = '';

@@ -15,6 +15,7 @@ export class Basket extends Component<IBasketView> {
 	protected _button: HTMLElement;
 
 	selected: CatalogItem[]; // нет четкого понимания куда сохранить элементы для корзины
+	total: string;
 
 	constructor(container: HTMLElement, protected events: EventEmitter) {
 		super(container);
@@ -25,13 +26,15 @@ export class Basket extends Component<IBasketView> {
 
 		if (this._button) {
 			this._button.addEventListener('click', () => {
-				events.emit('order:render');
+				events.emit('address:render');
 			});
 		}
 
 		this.items = [];
 
 		this.selected = [];
+
+		this.total = '';
 	}
 
 	set items(items: HTMLElement[]) {
@@ -52,10 +55,11 @@ export class Basket extends Component<IBasketView> {
 		parseInt(price) === 0
 			? this.setDisabled(this._button, true) // подумать про принцип единой отвественности
 			: this.setDisabled(this._button, false);
+
+		this.total = price;
 	}
 
-	// get price(): number {
-	// 	const res = parseInt(this.price);
-	// 	return res;
-	// }
+	get price(): string {
+		return this.total;
+	}
 }

@@ -15,11 +15,16 @@ export class ProductItem extends Model<IProduct> {
 export class AppData extends Model<IAppState> {
 	catalog: IProduct[];
 	basket: IProduct[];
-	order: IOrder | null;
+	order: IOrder | null = {
+		email: '',
+		phone: '',
+		address: '',
+		payment: 'none',
+		total: null,
+		items: [],
+	};
 
 	async setCatalog(items: IProduct[]) {
-		// console.log('bebra', items);
-
 		this.catalog = items.map((item) => new ProductItem(item, this.events));
 		this.emitChanges('items:changed', { catalog: this.catalog });
 	}
@@ -28,18 +33,15 @@ export class AppData extends Model<IAppState> {
 		let totalAmount = 0;
 
 		for (let i = 0; i < container.length; i++) {
-			const currentAccount = container[i];
-			totalAmount += currentAccount.price;
+			const current = container[i];
+			totalAmount += current.price;
 		}
 		return totalAmount + value;
 	}
 
 	addProduct(item: CatalogItem, container: CatalogItem[]) {
 		if (item) {
-			// console.log(item);
-			// console.log(container);
 			container.push(item);
-			// console.log(container);
 		}
 	}
 
@@ -48,6 +50,6 @@ export class AppData extends Model<IAppState> {
 	}
 
 	clearBasket(container: CatalogItem[]) {
-		container = [];
+		container.length = 0;
 	}
 }

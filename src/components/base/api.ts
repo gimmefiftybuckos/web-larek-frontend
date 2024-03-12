@@ -28,8 +28,6 @@ export class Api {
 	}
 
 	async get(uri: string) {
-		console.log(this.baseUrl + uri);
-
 		return fetch(this.baseUrl + uri, {
 			...this.options,
 			method: 'GET',
