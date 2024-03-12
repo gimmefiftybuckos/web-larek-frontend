@@ -114,6 +114,19 @@ export interface IOrderResult {
 	id: string;
 }
 
+// Описание страницы
+interface IPage {
+	counter: number;
+	catalog: HTMLElement[];
+	locked: boolean;
+}
+// Описание проверки форм
+interface IFormState {
+	valid: boolean;
+	errors: string;
+}
+
+// Описание карточек страницы
 export interface ICard {
 	id: string;
 	index: number;
@@ -122,6 +135,11 @@ export interface ICard {
 	title: string;
 	category: string;
 	price: number | null;
+}
+
+// Описание страницы подтверждения
+interface ISuccess {
+	total: string;
 }
 
 interface ICardActions {
