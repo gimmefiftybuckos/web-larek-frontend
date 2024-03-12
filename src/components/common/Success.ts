@@ -9,6 +9,7 @@ interface ISuccessActions {
 	onClick: () => void;
 }
 
+// Класс окна подтверждения заказа
 export class Success extends Component<ISuccess> {
 	protected _close: HTMLElement;
 	protected _total: HTMLElement;

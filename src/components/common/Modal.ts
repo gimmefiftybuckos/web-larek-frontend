@@ -6,6 +6,7 @@ interface IModalData {
 	content: HTMLElement;
 }
 
+// Класс для работы модального окна
 export class Modal extends Component<IModalData> {
 	protected _closeButton: HTMLButtonElement;
 	protected _content: HTMLElement;
@@ -28,17 +29,20 @@ export class Modal extends Component<IModalData> {
 		this._content.replaceChildren(value);
 	}
 
+	// Открытие модального окна
 	open() {
 		this.container.classList.add('modal_active');
 		this.events.emit('modal:open');
 	}
 
+	// Закрытие модального окна
 	close() {
 		this.events.emit('modal:close');
 		this.container.classList.remove('modal_active');
 		this.content = null;
 	}
 
+	// Отрисовка данных модального окна
 	render(data: IModalData): HTMLElement {
 		super.render(data);
 		this.open();

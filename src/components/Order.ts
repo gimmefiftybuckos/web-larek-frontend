@@ -4,6 +4,7 @@ import { EventEmitter, IEvents } from './base/events';
 import { ensureAllElements, ensureElement } from '../utils/utils';
 import { Form } from './common/Form';
 
+// Класс для работы с данными заказа
 export class Order extends Form<IOrderForm> {
 	protected _button: HTMLElement;
 	protected _actions: HTMLElement;
@@ -33,7 +34,7 @@ export class Order extends Form<IOrderForm> {
 			});
 		} else {
 			this._button.addEventListener('click', () => {
-				events.emit('order:submit');
+				events.emit('order:post');
 			});
 		}
 
@@ -57,21 +58,25 @@ export class Order extends Form<IOrderForm> {
 		this.setOrderFields();
 	}
 
+	// Установить номер телефона заказа
 	set phone(value: string) {
 		(this.container.elements.namedItem('phone') as HTMLInputElement).value =
 			value;
 	}
 
+	// Установить почту заказа
 	set email(value: string) {
 		(this.container.elements.namedItem('email') as HTMLInputElement).value =
 			value;
 	}
 
+	// Установить адрес заказа
 	set address(value: string) {
 		(this.container.elements.namedItem('address') as HTMLInputElement).value =
 			value;
 	}
 
+	// Кнопки выбора способа оплаты
 	protected toggleSelected(element: HTMLElement) {
 		const activeBtn = this.container.querySelector('.button_alt-active');
 
@@ -85,6 +90,7 @@ export class Order extends Form<IOrderForm> {
 		this.changeState();
 	}
 
+	// Обновление данных в стейте заказа
 	protected setOrderFields() {
 		this._inputs.forEach((element) => {
 			element.addEventListener('input', (event) => {
@@ -95,6 +101,7 @@ export class Order extends Form<IOrderForm> {
 		});
 	}
 
+	// Подключение валидации
 	protected enableValidation() {
 		this._inputs.forEach((element) => {
 			element.addEventListener('input', (event) => {
@@ -104,6 +111,7 @@ export class Order extends Form<IOrderForm> {
 		this.setHidden(this._errors);
 	}
 
+	// Валидация инпутов
 	protected checkInputValidation(element: HTMLInputElement) {
 		if (element.validity.valid) {
 			return true;
@@ -112,6 +120,7 @@ export class Order extends Form<IOrderForm> {
 		}
 	}
 
+	// Состояние кнопок выбор способа оплаты
 	protected changeState(element?: HTMLInputElement) {
 		const value = this._inputs.map((element) => {
 			if (element.value === '' || this.checkInputValidation(element) !== true) {
@@ -128,6 +137,7 @@ export class Order extends Form<IOrderForm> {
 		element ? this.showError(element) : null;
 	}
 
+	// Отображение элемента ошибки
 	protected showError(element: HTMLInputElement) {
 		if (element.validity.valid) {
 			this.setHidden(this._errors);

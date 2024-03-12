@@ -17,6 +17,7 @@ interface ICardActions {
 	onClick: (event: MouseEvent) => void;
 }
 
+// Класс для работы с элементами каталога
 export class Card extends Component<ICard> {
 	protected _index: HTMLElement;
 	protected _title: HTMLElement;
@@ -57,38 +58,45 @@ export class Card extends Component<ICard> {
 		}
 	}
 
+	// Проверка наличия элемента в корзине
 	checkInBasket(item: ProductItem, container: CatalogItem[]) {
-		container.map((element) => {
+		this.setDisabled(this._button, false);
+		this.setText(this._button, 'В корзину');
+
+		container.forEach((element) => {
 			if (item.id === element.id) {
 				this.setDisabled(this._button, true);
 				this.setText(this._button, 'Уже добавлено');
-			} else {
-				this.setDisabled(this._button, false);
-				this.setText(this._button, 'В корзину');
 			}
 		});
 	}
 
+	// Установить элемента страницы
 	set index(value: string) {
 		this.setText(this._index, value);
 	}
 
+	// Установить индефикатор элемента
 	set id(value: string) {
 		this.container.dataset.id = value;
 	}
 
+	// Получение индефикатор
 	get id(): string {
 		return this.container.dataset.id || '';
 	}
 
+	// Установить заголовок товара
 	set title(value: string) {
 		this.setText(this._title, value);
 	}
 
+	// Получение заголовка товара
 	get title(): string {
 		return this._title.textContent || '';
 	}
 
+	// Установить цену товара
 	set price(value: number | null) {
 		if (value) {
 			this.setText(this._price, value + catalogValue);
@@ -98,12 +106,14 @@ export class Card extends Component<ICard> {
 		}
 	}
 
+	// Получение цены товара
 	get price(): number {
 		return parseInt(this._price.textContent);
 	}
 
+	// Установить категорию товара
 	set category(value: string) {
-		const categoryClass = 'card__category_';
+		const categoryClassName = 'card__category_';
 		this.setText(this._category, value);
 
 		const categoryMap = new Map([
@@ -115,23 +125,25 @@ export class Card extends Component<ICard> {
 			['хард-скил', 'hard'],
 		]);
 
-		this.toggleClass(this._category, categoryClass + categoryMap.get(value));
+		this.toggleClass(
+			this._category,
+			categoryClassName + categoryMap.get(value)
+		);
 	}
 
+	// Установить изображение
 	set image(value: string) {
 		this.setImage(this._image, value, this.title);
 	}
 
+	// Установить описание
 	set description(value: string) {
 		this.setText(this._description, value);
 	}
 }
 
 export class CatalogItem extends Card {
-	// protected _status: HTMLElement;
-
 	constructor(container: HTMLElement, actions?: ICardActions) {
 		super('card', container, actions);
-		// this._status = ensureElement<HTMLElement>(`.card__status`, container);
 	}
 }

@@ -8,6 +8,7 @@ interface IPage {
 	locked: boolean;
 }
 
+// Класс страницы приложения
 export class Page extends Component<IPage> {
 	protected _counter: HTMLElement;
 	protected _catalog: HTMLElement;
@@ -27,14 +28,17 @@ export class Page extends Component<IPage> {
 		});
 	}
 
+	// Счетчик элементов корзины
 	set counter(value: number) {
 		this.setText(this._counter, String(value));
 	}
 
+	// Элементы каталога
 	set catalog(items: HTMLElement[]) {
 		this._catalog.replaceChildren(...items);
 	}
 
+	// Блокировка скролла страницы
 	set locked(value: boolean) {
 		if (value) {
 			document.body.classList.add('page__wrapper_locked');

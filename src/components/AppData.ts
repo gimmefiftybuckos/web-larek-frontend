@@ -16,20 +16,22 @@ export class AppData extends Model<IAppState> {
 	catalog: IProduct[];
 	basket: IProduct[];
 	order: IOrder | null = {
+		items: [],
 		email: '',
 		phone: '',
 		address: '',
-		payment: 'none',
+		payment: '',
 		total: null,
-		items: [],
 	};
 
+	// Заполнение католога
 	async setCatalog(items: IProduct[]) {
 		this.catalog = items.map((item) => new ProductItem(item, this.events));
 		this.emitChanges('items:changed', { catalog: this.catalog });
 	}
 
-	getPrice(container: CatalogItem[], value: string) {
+	// Получение данных о цене продуктов в корзине
+	getPrice(container: CatalogItem[], value: string): string {
 		let totalAmount = 0;
 
 		for (let i = 0; i < container.length; i++) {
@@ -39,17 +41,20 @@ export class AppData extends Model<IAppState> {
 		return totalAmount + value;
 	}
 
+	// Добавление товара
 	addProduct(item: CatalogItem, container: CatalogItem[]) {
 		if (item) {
 			container.push(item);
 		}
 	}
 
-	getProduct(container: HTMLElement[]) {
-		return container;
-	}
-
+	// Очистка корзины
 	clearBasket(container: CatalogItem[]) {
 		container.length = 0;
+	}
+
+	// Передача данных заказа перед отправкой
+	setOrder(state: IOrder) {
+		this.order = Object.assign(this.order, state);
 	}
 }

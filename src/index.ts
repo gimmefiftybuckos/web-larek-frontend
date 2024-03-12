@@ -15,16 +15,12 @@ import { Success } from './components/common/Success';
 const events = new EventEmitter();
 const api = new Api(API_URL);
 
-// Чтобы мониторить все события, для отладки
-// events.onAll(({ eventName, data }) => {
-// 	console.log(eventName, data);
-// });
-
+// Основные элементы
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
-
 const appData = new AppData({}, events); // принимает аргументы для Model
 
+// Все темплейты
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const selectedCardTemplate =
 	ensureElement<HTMLTemplateElement>('#card-preview');
@@ -36,11 +32,12 @@ const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
+// Переиспользуемые компоненты
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 const address = new Order(cloneTemplate(orderTemplate), events);
 const contacts = new Order(cloneTemplate(contactsTemplate), events);
 
-// Изменились элементы каталога
+// Изменения элементов каталога
 events.on('items:changed', () => {
 	page.catalog = appData.catalog.map((item) => {
 		const card = new CatalogItem(cloneTemplate(cardCatalogTemplate), {
@@ -56,6 +53,7 @@ events.on('items:changed', () => {
 	});
 });
 
+// Открытие карточки
 events.on('card:select', (item: ProductItem) => {
 	const card = new CatalogItem(cloneTemplate(selectedCardTemplate), {
 		onClick: (event) => {
@@ -64,7 +62,6 @@ events.on('card:select', (item: ProductItem) => {
 				: events.emit('basket:change');
 		},
 	});
-	card.checkInBasket(item, basket.selected);
 	modal.render({
 		content: card.render({
 			id: item.id,
@@ -75,8 +72,10 @@ events.on('card:select', (item: ProductItem) => {
 			category: item.category,
 		}),
 	});
+	card.checkInBasket(item, basket.selected);
 });
 
+// Отрисовка корзины
 events.on('basket:render', () => {
 	modal.render({
 		content: basket.render({
@@ -90,11 +89,14 @@ events.on('basket:render', () => {
 	});
 });
 
+// Обновление элементов корзины
 events.on('basket:change', (item: ProductItem | null) => {
 	// то как я воспринимаю эту работу: https://i.postimg.cc/HxyjBX0m/Untitled-1.jpg
+
 	const cardTemplate = new CatalogItem(cloneTemplate(basketCardTemplate), {
 		onClick: (event) => events.emit('basket:delete', item),
 	});
+
 	if (item !== null) {
 		cardTemplate.render({
 			id: item.id,
@@ -106,11 +108,13 @@ events.on('basket:change', (item: ProductItem | null) => {
 	} else {
 		events.emit('basket:render');
 	}
+
 	page.render({
 		counter: basket.selected.length,
 	});
 });
 
+// Удаление элементов из корзины
 events.on('basket:delete', (item: ProductItem) => {
 	basket.selected = basket.selected.filter((element) => {
 		return element.id !== item.id;
@@ -118,6 +122,7 @@ events.on('basket:delete', (item: ProductItem) => {
 	events.emit('basket:change', null);
 });
 
+// Отрисовка страницы с адресом для заказа
 events.on('address:render', () => {
 	modal.render({
 		content: address.render({
@@ -128,6 +133,7 @@ events.on('address:render', () => {
 	});
 });
 
+// Отрисовка страницы с контактными данными для заказа
 events.on('contacts:render', () => {
 	modal.render({
 		content: contacts.render({
@@ -140,39 +146,49 @@ events.on('contacts:render', () => {
 	contacts.order.payment = address.order.payment;
 });
 
+// Формирование данных о заказе на отправку
 events.on('data:set', () => {
 	let items: string[] = [];
 	basket.selected.forEach((element) => {
 		items.push(element.id);
 	});
-	appData.order.items = items;
-	appData.order.address = address.order.payment;
-	appData.order.payment = address.order.payment;
-	appData.order.email = contacts.order.email;
-	appData.order.phone = contacts.order.phone;
-	appData.order.total = parseInt(basket.total);
-}); // мне стыдно :/
 
+	appData.setOrder({
+		address: address.order.payment,
+		payment: address.order.payment,
+		phone: contacts.order.phone,
+		items: items,
+		email: contacts.order.email,
+		total: parseInt(basket.total),
+	});
+});
+
+// Отрисовка окна об успешном заказе
 events.on('order:submit', () => {
+	const success = new Success(cloneTemplate(successTemplate), {
+		onClick: () => {
+			appData.clearBasket(basket.selected);
+			events.emit('basket:change', null);
+			modal.close();
+		},
+	});
+
+	modal.render({
+		content: success.render({
+			total: basket.price,
+		}),
+	});
+});
+
+// Отправка данных о заказе
+events.on('order:post', () => {
 	events.emit('data:set');
 
 	api
 		.post('/order', appData.order)
 		.then((data: IOrderResult) => data)
 		.then(() => {
-			const success = new Success(cloneTemplate(successTemplate), {
-				onClick: () => {
-					appData.clearBasket(basket.selected);
-					events.emit('basket:change', null);
-					modal.close();
-				},
-			});
-
-			modal.render({
-				content: success.render({
-					total: basket.price,
-				}),
-			});
+			events.emit('order:submit');
 		})
 		.catch((result) => {
 			modal.close();
@@ -180,14 +196,17 @@ events.on('order:submit', () => {
 		});
 });
 
+// Открытие модального окна
 events.on('modal:open', () => {
 	page.locked = true;
 });
 
+// Закрытие модального окна
 events.on('modal:close', () => {
 	page.locked = false;
 });
 
+// Получение данных для католога
 api
 	.get('/product')
 	.then((data: ITotalItems<IProduct>) => appData.setCatalog(data.items))

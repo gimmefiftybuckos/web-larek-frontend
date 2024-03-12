@@ -9,6 +9,7 @@ interface IBasketView {
 	selected: CatalogItem[];
 }
 
+// Корзина магазина
 export class Basket extends Component<IBasketView> {
 	protected _list: HTMLElement;
 	protected _price: HTMLElement;
@@ -30,13 +31,12 @@ export class Basket extends Component<IBasketView> {
 			});
 		}
 
-		this.items = [];
-
 		this.selected = [];
 
 		this.total = '';
 	}
 
+	// Установить элементы товара
 	set items(items: HTMLElement[]) {
 		if (items.length) {
 			this._list.replaceChildren(...items);
@@ -49,6 +49,7 @@ export class Basket extends Component<IBasketView> {
 		}
 	}
 
+	// Устновить стоимость товаров в корзине
 	set price(price: string) {
 		this.setText(this._price, price);
 
@@ -59,6 +60,7 @@ export class Basket extends Component<IBasketView> {
 		this.total = price;
 	}
 
+	// Получить стоимость товаров в корзине
 	get price(): string {
 		return this.total;
 	}

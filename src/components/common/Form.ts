@@ -7,6 +7,7 @@ interface IFormState {
 	errors: string;
 }
 
+// Класс рабоыт с формами
 export class Form<T> extends Component<IFormState> {
 	protected _submit: HTMLButtonElement;
 	protected _errors: HTMLElement;
@@ -48,6 +49,7 @@ export class Form<T> extends Component<IFormState> {
 		this.setText(this._errors, value);
 	}
 
+	// Отрисовка элемента на странице
 	render(state: Partial<T> & IFormState) {
 		const { valid, errors, ...inputs } = state;
 		super.render({ valid, errors });
