@@ -13,7 +13,7 @@
 - src/pages/index.html — HTML-файл главной страницы
 - src/types/index.ts — файл с типами
 - src/index.ts — точка входа приложения
-- src/styles/styles.scss — корневой файл стилей
+- src/scss/styles.scss — корневой файл стилей
 - src/utils/constants.ts — файл с константами
 - src/utils/utils.ts — файл с утилитами
 
@@ -51,17 +51,19 @@ yarn build
 
 ```ts
 // Элементы в каталоге
-interface IProduct {
+export interface ICard {
+	// было много интерфейсов, которые дублировали друг друга
 	id: string;
+	index?: number;
 	description: string;
-	image: string;
+	image?: string;
 	title: string;
 	category: string;
 	price: number | null;
 }
 
 // Формы страницы заказа
-interface IOrderForm {
+export interface IOrderForm {
 	email: string;
 	phone: string;
 	address: string;
@@ -71,27 +73,27 @@ interface IOrderForm {
 }
 
 // Объекты для заказа
-interface IOrder extends IOrderForm {
+export interface IOrder extends IOrderForm {
 	items: string[];
 }
 
 // Элементы приложения
-interface IAppState {
-	catalog: IProduct[];
+export interface IAppState {
+	catalog: ICard[];
 	basket: string[];
 	order: IOrder | null;
 
 	// Заполнение католога
-	setCatalog(items: IProduct[]): void;
+	setCatalog(items: ICard[]): void;
 
 	// Получение данных о цене продуктов в корзине
-	getPrice(container: CatalogItem[], value: string): string;
+	getPrice(container: ICard[], value: string): string;
 
 	// Добавление товара
-	addProduct(item: CatalogItem, container: CatalogItem[]): void;
+	addProduct(item: ICard, container: ICard[]): void;
 
 	// Очистка корзины
-	clearBasket(container: CatalogItem[]): void;
+	clearBasket(container: ICard[]): void;
 
 	// Передача данных заказа перед отправкой
 	setOrder(state: IOrder): void;
@@ -120,21 +122,11 @@ interface IPage {
 	catalog: HTMLElement[];
 	locked: boolean;
 }
+
 // Описание проверки форм
 interface IFormState {
 	valid: boolean;
 	errors: string;
-}
-
-// Описание карточек страницы
-interface ICard {
-	id: string;
-	index: number;
-	description: string;
-	image?: string;
-	title: string;
-	category: string;
-	price: number | null;
 }
 
 // Описание страницы подтверждения
@@ -147,101 +139,25 @@ interface ICardActions {
 }
 ```
 
-### Связующие классы
+### Базовый код
+
+#### 1. Класс Api
+
+Класс через который реализован обмен данными с сервером.
+
+Конструктор принимает:
+
+- baseUrl: string — основная ссылка на сервер
+- options: RequesInit — параметры ссылки
+
+#### 2. Класс Component<T>
+
+Абстрактный класс, является дженериком и принимает в переменной T тип данных описываемого компонента приложения. Принимает темплейты компонентов приложения.
+
+Сочетает в себе все основные методы для работы с DOM в дочерних компонентах.
+Методы класс toggleClass, setText, setDisabled, setHidden, setVisible, setImage и render отвечают за отображение компонентов.
 
 ```ts
-class Api {
-	readonly baseUrl: string;
-	protected options: RequestInit;
-
-	protected handleResponse(response: Response): Promise<object>;
-
-	async get(uri: string): IProduct[];
-
-	async post(uri: string, data: object, method: ApiPostMethods = 'POST');
-}
-
-class EventEmitter implements IEvents {
-	_events: Map<EventName, Set<Subscriber>>;
-
-	/**
-	 * Установить обработчик на событие
-	 */
-	on<T extends object>(eventName: EventName, callback: (event: T) => void);
-
-	/**
-	 * Снять обработчик с события
-	 */
-	off(eventName: EventName, callback: Subscriber);
-
-	/**
-	 * Инициировать событие с данными
-	 */
-	emit<T extends object>(eventName: string, data?: T);
-
-	/**
-	 * Слушать все события
-	 */
-	onAll(callback: (event: EmitterEvent) => void);
-
-	/**
-	 * Сбросить все обработчики
-	 */
-	offAll();
-
-	/**
-	 * Сделать коллбек триггер, генерирующий событие при вызове
-	 */
-	trigger<T extends object>(eventName: string, context?: Partial<T>);
-}
-```
-
-### Модель данных
-
-```ts
-abstract class Model<T> {
-	// Сообщить всем что модель поменялась
-	emitChanges(event: string, payload?: object);
-}
-
-class AppData extends Model<IAppState> {
-	catalog: IProduct[];
-	basket: IProduct[];
-	order: IOrder | null = {
-		items: [],
-		email: '',
-		phone: '',
-		address: '',
-		payment: '',
-		total: null,
-	};
-
-	// Заполнение католога
-	async setCatalog(items: IProduct[]): void;
-
-	// Получение данных о цене продуктов в корзине
-	getPrice(container: CatalogItem[], value: string): string;
-
-	// Добавление товара
-	addProduct(item: CatalogItem, container: CatalogItem[]): void;
-
-	// Очистка корзины
-	clearBasket(container: CatalogItem[]): void;
-
-	// Передача данных заказа перед отправкой
-	setOrder(state: IOrder): void;
-}
-```
-
-### Классы представления
-
-```ts
-// Базовый компонент
-abstract class Component<T> {
-	protected constructor(protected readonly container: HTMLElement);
-
-	// Инструментарий для работы с DOM в дочерних компонентах
-
 	// Переключить класс
 	toggleClass(element: HTMLElement, className: string, force?: boolean): void;
 
@@ -266,124 +182,74 @@ abstract class Component<T> {
 
 	// Вернуть корневой DOM-элемент
 	render(data?: Partial<T>): HTMLElement;
-}
+```
 
-// Класс страницы приложения
-class Page extends Component<IPage> {
-	protected _counter: HTMLElement;
-	protected _catalog: HTMLElement;
-	protected _wrapper: HTMLElement;
-	protected _basket: HTMLElement;
+#### 3. Класс EventEmitter
 
-	constructor(container: HTMLElement, protected events: IEvents);
+Реализует паттерн «Наблюдатель» и позволяет подписываться на события и уведомлять подписчиков о наступлении события.
 
-	// Счетчик элементов корзины
-	set counter(value: number): void;
+Класс имеет методы on , off , emit — для подписки на событие, отписки от события и уведомления подписчиков о наступлении события соответственно.
 
-	// Элементы каталога
-	set catalog(items: HTMLElement[]): void;
+Дополнительно реализованы методы onAll и offAll — для подписки на все события и сброса всех подписчиков.
 
-	// Блокировка скролла страницы
-	set locked(value: boolean): void;
-}
+### Модель данных
 
-// Класс для работы с элементами каталога
-class Card extends Component<ICard> {
-	protected _index: HTMLElement;
-	protected _title: HTMLElement;
-	protected _price: HTMLElement;
-	protected _category: HTMLElement;
-	protected _image?: HTMLImageElement;
-	protected _description?: HTMLElement;
-	protected _button?: HTMLButtonElement;
+#### 1. Класс AppData
 
-	constructor(
-		protected blockName: string,
-		container: HTMLElement,
-		actions?: ICardActions
-	);
+Класс реализующий основные методы работы с данными, собирает все данные с компонентов.
 
-	// Проверка наличия элемента в корзине
-	checkInBasket(item: ProductItem, container: CatalogItem[]);
+Основные методы класса setCatalog, getPrice, addProduct, clearBasket, setOrder отвечают за передачу товаров между компонентами приложения.
 
-	// Установить элемента страницы
-	set index(value: string);
+```ts
+	// Заполнение католога
+	async setCatalog(items: IProduct[]): void;
 
-	// Установить индефикатор элемента
-	set id(value: string);
+    // Получение данных о цене продуктов в корзине
+    getPrice(container: CatalogItem[], value: string): string;
 
-	// Получение индефикатор
-	get id(): string;
+    // Добавление товара
+    addProduct(item: CatalogItem, container: CatalogItem[]): void;
 
-	// Установить заголовок товара
-	set title(value: string);
+    // Очистка корзины
+    clearBasket(container: CatalogItem[]): void;
 
-	// Получение заголовка товара
-	get title(): string;
+    // Передача данных заказа перед отправкой
+    setOrder(state: IOrder): void;
+```
 
-	// Установить цену товара
-	set price(value: number | null);
+### Классы представления
 
-	// Получение цены товара
-	get price(): number;
+Представленные ниже классы расширяются классом Component<T>
 
-	// Установить категорию товара
-	set category(value: string);
+#### 1. Класс Page
 
-	// Установить изображение
-	set image(value: string);
+Класс реализует управление элементами главной страницы каталога.
 
-	// Установить описание
-	set description(value: string);
-}
+#### 2. Класс Card
 
-// Класс для работы с корзиной магазина
-class Basket extends Component<IBasketView> {
-	protected _list: HTMLElement;
-	protected _price: HTMLElement;
-	protected _button: HTMLElement;
+Класс для работы с элементами каталога, реализует отрисовку карточек товара в разных компонентах приложения.
 
-	selected: CatalogItem[]; // нет четкого понимания куда сохранить элементы для корзины
-	total: string;
+Отрисовка карточек происходит за счет метода render, наследуемого от класса Component.
 
-	constructor(container: HTMLElement, protected events: EventEmitter);
+Метод checkInBasket позволяет корректно отобразить кнопку добавления товара в корзину.
 
-	// Установить элементы товара
-	set items(items: HTMLElement[]);
+Интерфейс ICard описывает все типы данных, обрабатываемые классом Card.
 
-	// Устновить стоимость товаров в корзине
-	set price(price: string);
+#### 3. Класс Basket
 
-	// Получить стоимость товаров в корзине
-	get price(): string;
-}
+Данный класс управляет корзиной товаров. Принимает массив добавленных в корзину элементов каталога, определяют общую стоимость и отрисовывает их
 
-// Класс для работы с данными заказа
-class Order extends Form<IOrderForm> {
-	protected _button: HTMLElement;
-	protected _actions: HTMLElement;
-	protected _paymentButton: HTMLElement[];
-	protected _inputs: HTMLInputElement[];
-	order: IOrder | null = {
-		email: '',
-		phone: '',
-		address: '',
-		payment: 'none',
-		total: null,
-		items: [],
-	};
+Интерфейс IBasketView описывает все типы данных, обрабатываемые классом Basket.
 
-	constructor(container: HTMLFormElement, events: IEvents);
+#### 4. Класс Order
 
-	// Установить номер телефона заказа
-	set phone(value: string);
+Класс отвечает за обработку данных о заказе. Принимает введенные пользователем данные и заносит их в стейт для дальнейшей обработки.
 
-	// Установить почту заказа
-	set email(value: string);
+Методы enableValidation, checkInputValidation, changeState, showError отвечают за валидацию введенных данных.
 
-	// Установить адрес заказа
-	set address(value: string);
+Методы toggleSelected, setOrderFields отвечают за обновление данных полей компонента
 
+```ts
 	// Кнопки выбора способа оплаты
 	protected toggleSelected(element: HTMLElement);
 
@@ -401,5 +267,17 @@ class Order extends Form<IOrderForm> {
 
 	// Отображение элемента ошибки
 	protected showError(element: HTMLInputElement);
-}
 ```
+
+### События
+
+- items:changed - произошло обновление элементов каталога
+- card:select - карточка выбрана
+- basket:render - корзина открыта
+- basket:change - обновление товаров в корзине
+- basket:delete - элемент удален из корзины
+- address:render - открыта форма ввода адреса заказа
+- contacts:render - открыта форма ввода контактных данных заказа
+- data:set - данные о заказе собраны
+- order:post - данные отправлены
+- order:submit - заказ подтвержден

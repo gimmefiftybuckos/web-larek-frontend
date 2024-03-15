@@ -1,17 +1,8 @@
-import { catalogValue } from '../utils/constants';
+import { ICard } from '../types';
+import { catalogValue, categoryMap } from '../utils/constants';
 import { ensureElement } from '../utils/utils';
 import { ProductItem } from './AppData';
 import { Component } from './base/Component';
-
-export interface ICard {
-	id: string;
-	index: number;
-	description: string;
-	image?: string;
-	title: string;
-	category: string;
-	price: number | null;
-}
 
 interface ICardActions {
 	onClick: (event: MouseEvent) => void;
@@ -115,15 +106,6 @@ export class Card extends Component<ICard> {
 	set category(value: string) {
 		const categoryClassName = 'card__category_';
 		this.setText(this._category, value);
-
-		const categoryMap = new Map([
-			// наверное, это не совсем по ООП
-			['софт-скил', 'soft'],
-			['другое', 'other'],
-			['дополнительное', 'additional'],
-			['кнопка', 'button'],
-			['хард-скил', 'hard'],
-		]);
 
 		this.toggleClass(
 			this._category,

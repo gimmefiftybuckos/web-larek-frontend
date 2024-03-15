@@ -1,7 +1,6 @@
-// import {Form} from "./common/Form";
 import { IOrder, IOrderForm } from '../types';
-import { EventEmitter, IEvents } from './base/events';
-import { ensureAllElements, ensureElement } from '../utils/utils';
+import { IEvents } from './base/events';
+import { ensureAllElements } from '../utils/utils';
 import { Form } from './common/Form';
 
 // Класс для работы с данными заказа

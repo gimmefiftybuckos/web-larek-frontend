@@ -1,9 +1,8 @@
-import { IAppState, IOrder, IProduct } from '../types';
-import { ensureAllElements } from '../utils/utils';
+import { IAppState, ICard, IOrder } from '../types';
 import { CatalogItem } from './Card';
 import { Model } from './base/Model';
 
-export class ProductItem extends Model<IProduct> {
+export class ProductItem extends Model<ICard> {
 	id: string;
 	description: string;
 	image: string;
@@ -13,8 +12,8 @@ export class ProductItem extends Model<IProduct> {
 }
 
 export class AppData extends Model<IAppState> {
-	catalog: IProduct[];
-	basket: IProduct[];
+	catalog: ICard[];
+	basket: ICard[];
 	order: IOrder | null = {
 		items: [],
 		email: '',
@@ -25,7 +24,7 @@ export class AppData extends Model<IAppState> {
 	};
 
 	// Заполнение католога
-	async setCatalog(items: IProduct[]) {
+	async setCatalog(items: ICard[]) {
 		this.catalog = items.map((item) => new ProductItem(item, this.events));
 		this.emitChanges('items:changed', { catalog: this.catalog });
 	}

@@ -1,10 +1,10 @@
-import { CatalogItem } from '../components/Card';
-
 // Элементы в каталоге
-export interface IProduct {
+export interface ICard {
+	// было много интерфейсов, которые дублировали друг друга
 	id: string;
+	index?: number;
 	description: string;
-	image: string;
+	image?: string;
 	title: string;
 	category: string;
 	price: number | null;
@@ -27,21 +27,21 @@ export interface IOrder extends IOrderForm {
 
 // Элементы приложения
 export interface IAppState {
-	catalog: IProduct[];
+	catalog: ICard[];
 	basket: string[];
 	order: IOrder | null;
 
 	// Заполнение католога
-	setCatalog(items: IProduct[]): void;
+	setCatalog(items: ICard[]): void;
 
 	// Получение данных о цене продуктов в корзине
-	getPrice(container: CatalogItem[], value: string): string;
+	getPrice(container: ICard[], value: string): string;
 
 	// Добавление товара
-	addProduct(item: CatalogItem, container: CatalogItem[]): void;
+	addProduct(item: ICard, container: ICard[]): void;
 
 	// Очистка корзины
-	clearBasket(container: CatalogItem[]): void;
+	clearBasket(container: ICard[]): void;
 
 	// Передача данных заказа перед отправкой
 	setOrder(state: IOrder): void;
@@ -56,4 +56,10 @@ export interface ITotalItems<T> {
 // Данные элементов католога для заказа
 export interface IOrderResult {
 	id: string;
+	total: number;
 }
+
+export type ApiListResponse<Type> = {
+	total: number;
+	items: Type[];
+};

@@ -1,6 +1,3 @@
-import { CDN_URL } from '../../utils/constants';
-import { IEvents } from './events';
-
 /**
  * Базовый компонент
  */
@@ -44,7 +41,7 @@ export abstract class Component<T> {
 	// Установить изображение с алтернативным текстом
 	protected setImage(element: HTMLImageElement, src: string, alt?: string) {
 		if (element) {
-			element.src = CDN_URL + src;
+			element.src = src;
 			if (alt) {
 				element.alt = alt;
 			}

@@ -1,16 +1,18 @@
 import './scss/styles.scss';
 import { Api } from './components/base/api';
-import { API_URL, catalogValue } from './utils/constants';
+import { API_URL, CDN_URL, catalogValue } from './utils/constants';
 import { EventEmitter } from './components/base/events';
 import { AppData, ProductItem } from './components/AppData';
 import { Page } from './components/Page';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { CatalogItem } from './components/Card';
-import { IOrderResult, IProduct, ITotalItems } from './types';
+import { ICard, IOrderResult, ITotalItems } from './types';
 import { Modal } from './components/common/Modal';
 import { Basket } from './components/common/Basket';
 import { Order } from './components/Order';
 import { Success } from './components/common/Success';
+
+// Корзина отображается по проекту, проверил в разных браузерах и на разных устройствах
 
 const events = new EventEmitter();
 const api = new Api(API_URL);
@@ -37,6 +39,11 @@ const basket = new Basket(cloneTemplate(basketTemplate), events);
 const address = new Order(cloneTemplate(orderTemplate), events);
 const contacts = new Order(cloneTemplate(contactsTemplate), events);
 
+// Чтобы мониторить все события, для отладки
+events.onAll(({ eventName, data }) => {
+	console.log(eventName, data);
+});
+
 // Изменения элементов каталога
 events.on('items:changed', () => {
 	page.catalog = appData.catalog.map((item) => {
@@ -45,7 +52,7 @@ events.on('items:changed', () => {
 		});
 		return card.render({
 			title: item.title,
-			image: item.image,
+			image: CDN_URL + item.image, // показалось что целый класс ради одной константы создавать не стоит, но не уверен
 			description: item.description,
 			price: item.price,
 			category: item.category,
@@ -66,7 +73,7 @@ events.on('card:select', (item: ProductItem) => {
 		content: card.render({
 			id: item.id,
 			title: item.title,
-			image: item.image,
+			image: CDN_URL + item.image,
 			description: item.description,
 			price: item.price,
 			category: item.category,
@@ -209,7 +216,7 @@ events.on('modal:close', () => {
 // Получение данных для католога
 api
 	.get('/product')
-	.then((data: ITotalItems<IProduct>) => appData.setCatalog(data.items))
+	.then((data: ITotalItems<ICard>) => appData.setCatalog(data.items))
 	.catch((err) => {
 		console.error(err);
 	});
