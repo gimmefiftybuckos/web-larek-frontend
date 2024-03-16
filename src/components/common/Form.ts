@@ -1,13 +1,13 @@
 import { Component } from '../base/Component';
 import { IEvents } from '../base/events';
-import { ensureAllElements, ensureElement } from '../../utils/utils';
+import { ensureElement } from '../../utils/utils';
 
 interface IFormState {
 	valid: boolean;
 	errors: string;
 }
 
-// Класс рабоыт с формами
+// Класс работы с формами
 export class Form<T> extends Component<IFormState> {
 	protected _submit: HTMLButtonElement;
 	protected _errors: HTMLElement;
