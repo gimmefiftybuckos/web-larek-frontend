@@ -114,6 +114,7 @@ interface ITotalItems<T> {
 // Данные элементов католога для заказа
 interface IOrderResult {
 	id: string;
+	total: number;
 }
 
 // Описание страницы
@@ -201,9 +202,8 @@ interface ICardActions {
 Основные методы класса setCatalog, getPrice, addProduct, clearBasket, setOrder отвечают за передачу товаров между компонентами приложения.
 
 ```ts
-
 	// Заполнение католога
-	async setCatalog(items: IProduct[]): void;
+	setCatalog(items: IProduct[]): void;
 
     // Получение данных о цене продуктов в корзине
     getPrice(container: CatalogItem[], value: string): string;
