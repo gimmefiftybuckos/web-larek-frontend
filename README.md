@@ -17,6 +17,36 @@
 - src/utils/constants.ts — файл с константами
 - src/utils/utils.ts — файл с утилитами
 
+## Скриншоты
+
+### Главная страница приложения
+
+[![temp-Imageirg-Ld1.avif](https://i.postimg.cc/g0MmyHdS/temp-Imageirg-Ld1.avif)](https://postimg.cc/R3nk4fWK)
+
+### Открытая карточка каталога
+
+[![temp-Image-VFNkm8.avif](https://i.postimg.cc/DwjMBjJX/temp-Image-VFNkm8.avif)](https://postimg.cc/BjFpvCCS)
+
+### Пустая корзина заказа
+
+[![temp-Imagegwbh-ZB.avif](https://i.postimg.cc/bNqV8c1n/temp-Imagegwbh-ZB.avif)](https://postimg.cc/7bQnMRsP)
+
+### Пример наполнения корзины
+
+[![temp-Image-OBo-IE9.avif](https://i.postimg.cc/QCmbVCcT/temp-Image-OBo-IE9.avif)](https://postimg.cc/MfcRFWP6)
+
+### Форма ввода данных об адресе заказа
+
+[![temp-Image73-Xrrl.avif](https://i.postimg.cc/xdm3MtKY/temp-Image73-Xrrl.avif)](https://postimg.cc/hJSmq8y3)
+
+### Форма ввода контактных данных заказа
+
+[![temp-Image-Wfag-OD.avif](https://i.postimg.cc/sfm9YBZB/temp-Image-Wfag-OD.avif)](https://postimg.cc/K4KMF8fF)
+
+### Окно подтверждения заказа
+
+[![temp-Image-Gf-VH8p.avif](https://i.postimg.cc/rsw4nJtD/temp-Image-Gf-VH8p.avif)](https://postimg.cc/yg2WW0jK)
+
 ## Установка и запуск
 
 Для установки и запуска проекта необходимо выполнить команды
