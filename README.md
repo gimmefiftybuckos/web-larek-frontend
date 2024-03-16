@@ -258,22 +258,22 @@ interface ICardActions {
 
 ```ts
 	// Кнопки выбора способа оплаты
-	protected toggleSelected(element: HTMLElement);
+	protected toggleSelected(element: HTMLElement): void;
 
 	// Обновление данных в стейте заказа
-	protected setOrderFields();
+	protected setOrderFields(): void;
 
 	// Подключение валидации
-	protected enableValidation();
+	protected enableValidation(): void;
 
 	// Валидация инпутов
-	protected checkInputValidation(element: HTMLInputElement);
+	protected checkInputValidation(element: HTMLInputElement): boolean;
 
 	// Состояние кнопок выбор способа оплаты
-	protected changeState(element?: HTMLInputElement);
+	protected changeState(element?: HTMLInputElement): void;
 
 	// Отображение элемента ошибки
-	protected showError(element: HTMLInputElement);
+	protected showError(element: HTMLInputElement): void;
 ```
 
 ### События
