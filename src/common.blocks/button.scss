@@ -17,8 +17,4 @@
     @include mixins.button(white, $primaryLight, $primaryLight);
     border: $hoverBorder;
   }
-
-  &disabled {
-    opacity: 0.1;
-  }
 }

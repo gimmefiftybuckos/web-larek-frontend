@@ -20,7 +20,7 @@ const api = new Api(API_URL);
 // Основные элементы
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
-const appData = new AppData({}, events); // принимает аргументы для Model
+const appData = new AppData({}, events);
 
 // Все темплейты
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');

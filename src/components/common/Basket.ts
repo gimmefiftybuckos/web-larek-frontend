@@ -52,11 +52,9 @@ export class Basket extends Component<IBasketView> {
 	// Устновить стоимость товаров в корзине
 	set price(price: string) {
 		this.setText(this._price, price);
-
-		parseInt(price) === 0
-			? this.setDisabled(this._button, true) // подумать про принцип единой отвественности
-			: this.setDisabled(this._button, false);
-
+		if (parseInt(price) === 0) {
+			this.setDisabled(this._button, true);
+		} else this.setDisabled(this._button, false);
 		this.total = price;
 	}
 
