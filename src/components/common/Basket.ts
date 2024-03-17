@@ -15,7 +15,7 @@ export class Basket extends Component<IBasketView> {
 	protected _price: HTMLElement;
 	protected _button: HTMLElement;
 
-	selected: CatalogItem[]; // нет четкого понимания куда сохранить элементы для корзины
+	selected: CatalogItem[];
 	total: string;
 
 	constructor(container: HTMLElement, protected events: EventEmitter) {
@@ -36,6 +36,13 @@ export class Basket extends Component<IBasketView> {
 		this.total = '';
 	}
 
+	// Определение состояния кнопки корзины
+	protected setButtonStatus(price: string) {
+		parseInt(price) === 0
+			? this.setDisabled(this._button, true)
+			: this.setDisabled(this._button, false);
+	}
+
 	// Установить элементы товара
 	set items(items: HTMLElement[]) {
 		if (items.length) {
@@ -52,9 +59,7 @@ export class Basket extends Component<IBasketView> {
 	// Устновить стоимость товаров в корзине
 	set price(price: string) {
 		this.setText(this._price, price);
-		if (parseInt(price) === 0) {
-			this.setDisabled(this._button, true);
-		} else this.setDisabled(this._button, false);
+		this.setButtonStatus(price);
 		this.total = price;
 	}
 

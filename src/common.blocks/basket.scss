@@ -8,7 +8,7 @@
   inline-size: 100%;
 
   &__list {
-    block-size: 582px;
+    max-block-size: 582px;
     overflow: auto;
     padding: 0;
     margin: 0;
